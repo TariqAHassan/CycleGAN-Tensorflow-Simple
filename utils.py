@@ -12,13 +12,13 @@ class ItemPool(object):
     def __init__(self, max_num=50):
         self.max_num = max_num
         self.num = 0
-        self.items = []
+        self.items = list()
 
     def __call__(self, in_items):
-        """ in_items is a list of item"""
+        """`in_items` is a list of item"""
         if self.max_num == 0:
             return in_items
-        return_items = []
+        return_items = list()
         for in_item in in_items:
             if self.num < self.max_num:
                 self.items.append(in_item)

@@ -2,38 +2,30 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import sys
 import ops
 import data
 import utils
 import models
-import argparse
 import numpy as np
+from glob import glob
 import tensorflow as tf
 import image_utils as im
-
-from glob import glob
 
 # ------------------------------------------------------------------
 # Param
 # ------------------------------------------------------------------
 
-parser = argparse.ArgumentParser(description='')
-parser.add_argument('--dataset', dest='dataset', default='horse2zebra', help='which dataset to use')
-parser.add_argument('--load_size', dest='load_size', type=int, default=286, help='scale images to this size')
-parser.add_argument('--crop_size', dest='crop_size', type=int, default=256, help='then crop to this size')
-parser.add_argument('--epoch', dest='epoch', type=int, default=200, help='# of epoch')
-parser.add_argument('--batch_size', dest='batch_size', type=int, default=1, help='# images in a batch')
-parser.add_argument('--lr', dest='lr', type=float, default=0.0002, help='initial learning rate for adam')
-parser.add_argument('--gpu_id', dest='gpu_id', type=int, default=0, help='GPU ID')
-args = parser.parse_args()
+dataset = 'horse2zebra'
+load_size = 286
+crop_size = 256
+n_channels = 3
+epoch = 200
+batch_size = 1
+lr = 0.0002
+gpu_id = 0
 
-dataset = args.dataset
-load_size = args.load_size
-crop_size = args.crop_size
-epoch = args.epoch
-batch_size = args.batch_size
-lr = args.lr
-gpu_id = args.gpu_id
+input_shape = [None, crop_size, crop_size, n_channels]
 
 # ------------------------------------------------------------------
 # Graphs
@@ -42,23 +34,24 @@ gpu_id = args.gpu_id
 
 with tf.device('/gpu:%d' % gpu_id):
     # Graph ---
+
     # nodes
-    a_real = tf.placeholder(tf.float32, shape=[None, crop_size, crop_size, 3])
-    b_real = tf.placeholder(tf.float32, shape=[None, crop_size, crop_size, 3])
-    a2b_sample = tf.placeholder(tf.float32, shape=[None, crop_size, crop_size, 3])
-    b2a_sample = tf.placeholder(tf.float32, shape=[None, crop_size, crop_size, 3])
+    a_real = tf.placeholder(tf.float32, shape=input_shape)
+    b_real = tf.placeholder(tf.float32, shape=input_shape)
+    a2b_sample = tf.placeholder(tf.float32, shape=input_shape)
+    b2a_sample = tf.placeholder(tf.float32, shape=input_shape)
 
-    a2b = models.generator(a_real, 'a2b')
-    b2a = models.generator(b_real, 'b2a')
-    b2a2b = models.generator(b2a, 'a2b', reuse=True)
-    a2b2a = models.generator(a2b, 'b2a', reuse=True)
+    a2b = models.generator(a_real, scope='a2b')
+    b2a = models.generator(b_real, scope='b2a')
+    b2a2b = models.generator(b2a, scope='a2b', reuse=True)
+    a2b2a = models.generator(a2b, scope='b2a', reuse=True)
 
-    a_dis = models.discriminator(a_real, 'a')
-    b2a_dis = models.discriminator(b2a, 'a', reuse=True)
-    b2a_sample_dis = models.discriminator(b2a_sample, 'a', reuse=True)
-    b_dis = models.discriminator(b_real, 'b')
-    a2b_dis = models.discriminator(a2b, 'b', reuse=True)
-    a2b_sample_dis = models.discriminator(a2b_sample, 'b', reuse=True)
+    a_dis = models.discriminator(a_real, scope='a')
+    b2a_dis = models.discriminator(b2a, scope='a', reuse=True)
+    b2a_sample_dis = models.discriminator(b2a_sample, scope='a', reuse=True)
+    b_dis = models.discriminator(b_real, scope='b')
+    a2b_dis = models.discriminator(a2b, scope='b', reuse=True)
+    a2b_sample_dis = models.discriminator(a2b_sample, scope='b', reuse=True)
 
     # losses
     g_loss_a2b = tf.identity(ops.l2_loss(a2b_dis, tf.ones_like(a2b_dis)), name='g_loss_a2b')
@@ -92,7 +85,6 @@ with tf.device('/gpu:%d' % gpu_id):
 # ------------------------------------------------------------------
 # Train - Init
 # ------------------------------------------------------------------
-
 
 # session
 config = tf.ConfigProto(allow_soft_placement=True)
@@ -129,8 +121,8 @@ summary_writer = tf.summary.FileWriter('./summaries/' + dataset, sess.graph)
 # Saver
 # ------------------------------------------------------------------
 
-ckpt_dir = './checkpoints/' + dataset
-utils.mkdir(ckpt_dir + '/')
+ckpt_dir = './checkpoints/{dataset}/'.format(dataset=dataset)
+utils.mkdir(ckpt_dir)
 
 saver = tf.train.Saver(max_to_keep=5)
 ckpt_path = utils.load_checkpoint(ckpt_dir, sess, saver)
@@ -160,8 +152,10 @@ try:
         b2a_sample_ipt = np.array(b2a_pool(list(b2a_opt)))
 
         # train G
-        g_summary_opt, _ = sess.run([g_summary, g_train_op], feed_dict={a_real: a_real_ipt, b_real: b_real_ipt})
+        g_summary_opt, _ = sess.run([g_summary, g_train_op],
+                                    feed_dict={a_real: a_real_ipt, b_real: b_real_ipt})
         summary_writer.add_summary(g_summary_opt, it)
+
         # train D_b
         d_summary_b_opt, _ = sess.run([d_summary_b, d_b_train_op],
                                       feed_dict={b_real: b_real_ipt, a2b_sample: a2b_sample_ipt})
@@ -196,7 +190,6 @@ try:
             utils.mkdir(save_dir + '/')
             im.imwrite(im.immerge(sample_opt, 2, 3),
                        '%s/Epoch_(%d)_(%dof%d).jpg' % (save_dir, epoch, it_epoch, batch_epoch))
-
 except Exception as e:
     coord.request_stop(e)
 finally:
@@ -204,3 +197,4 @@ finally:
     coord.request_stop()
     coord.join(threads)
     sess.close()
+    sys.exit()
