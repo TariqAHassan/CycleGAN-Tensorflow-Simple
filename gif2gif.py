@@ -18,6 +18,7 @@ def gif_frames(gif, to_numpy=True):
     to_numpy = True -> return numpy ([-1.0, 1.0], float64) images
     to_numpy = False -> return PIL ([0, 255], uint8) images
     """
+
     def iter_frame(gif):
         try:
             i = 0
@@ -47,7 +48,8 @@ def gif_frames(gif, to_numpy=True):
 """ param """
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--gif', dest='gif', default='./pics/horse.gif', help='the input gif')
-parser.add_argument('--save_path', dest='save_path', default='./pics/horse2zebra.gif', help='path to save the output gif')
+parser.add_argument('--save_path', dest='save_path', default='./pics/horse2zebra.gif',
+                    help='path to save the output gif')
 parser.add_argument('--duration', dest='duration', type=float, default=0.07, help='duration of the output gif')
 parser.add_argument('--dataset', dest='dataset', default='horse2zebra', help='which dataset to use')
 parser.add_argument('--direction', dest='direction', default='a2b', help='translation direction')
@@ -62,7 +64,6 @@ direction = args.direction
 crop_size = args.crop_size
 
 assert direction == 'a2b' or direction == 'b2a', 'Direction should be a2b or b2a!'
-
 
 """ run """
 frames = []

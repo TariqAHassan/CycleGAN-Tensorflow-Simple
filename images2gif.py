@@ -76,6 +76,7 @@ def encode(x):
         return x.encode('utf-8')
     return x
 
+
 try:
     import PIL
     from PIL import Image
@@ -214,7 +215,7 @@ class GifWriter:
         """
 
         if loops == 0 or loops == float('inf'):
-            loops = 2**16 - 1
+            loops = 2 ** 16 - 1
             # bb = "" # application extension should not be used
             # (the extension interprets zero loops
             # to mean an infinite number of loops)
@@ -413,10 +414,10 @@ class GifWriter:
         # Obtain palette for all images and count each occurance
         palettes, occur = [], []
         for im in images:
-            #palette = getheader(im)[1]
+            # palette = getheader(im)[1]
             palette = getheader(im)[0][-1]
             if not palette:
-              #palette = PIL.ImagePalette.ImageColor
+                # palette = PIL.ImagePalette.ImageColor
                 palette = im.palette.tobytes()
             palettes.append(palette)
         for palette in palettes:
@@ -778,11 +779,11 @@ class NeuQuant:
         return self.NETSIZE
 
     def setUpArrays(self):
-        self.network[0, 0] = 0.0    # Black
+        self.network[0, 0] = 0.0  # Black
         self.network[0, 1] = 0.0
         self.network[0, 2] = 0.0
 
-        self.network[1, 0] = 255.0    # White
+        self.network[1, 0] = 255.0  # White
         self.network[1, 1] = 255.0
         self.network[1, 2] = 255.0
 
@@ -857,6 +858,7 @@ class NeuQuant:
     #    self.freq[bestpos] += self.BETA
     #    self.bias[bestpos] -= self.BETAGAMMA
     #    return bestbiaspos
+
     def contest(self, b, g, r):
         """ Search for biased BGR values
                 Finds closest neuron (min dist) and updates self.freq
@@ -890,7 +892,7 @@ class NeuQuant:
         alpha = self.INITALPHA
 
         i = 0
-        rad = biasRadius * 2**self.RADIUSBIASSHIFT
+        rad = biasRadius * 2 ** self.RADIUSBIASSHIFT
         if rad <= 1:
             rad = 0
 
@@ -938,7 +940,7 @@ class NeuQuant:
             if i % delta == 0:
                 alpha -= alpha / alphadec
                 biasRadius -= biasRadius / self.RADIUSDEC
-                rad = biasRadius * 2**self.RADIUSBIASSHIFT
+                rad = biasRadius * 2 ** self.RADIUSBIASSHIFT
                 if rad <= 1:
                     rad = 0
 

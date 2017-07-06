@@ -7,7 +7,6 @@ import functools
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 
-
 conv = functools.partial(slim.conv2d, activation_fn=None)
 deconv = functools.partial(slim.conv2d_transpose, activation_fn=None)
 relu = tf.nn.relu
@@ -15,12 +14,11 @@ lrelu = functools.partial(ops.leak_relu, leak=0.2)
 
 
 def discriminator(img, scope, df_dim=64, reuse=False, train=True):
-
     bn = functools.partial(slim.batch_norm, scale=True, is_training=train,
                            decay=0.9, epsilon=1e-5, updates_collections=None)
 
     with tf.variable_scope(scope + '_discriminator', reuse=reuse):
-        h0 = lrelu(conv(img, df_dim, 4, 2, scope='h0_conv'))    # h0 is (128 x 128 x df_dim)
+        h0 = lrelu(conv(img, df_dim, 4, 2, scope='h0_conv'))  # h0 is (128 x 128 x df_dim)
         h1 = lrelu(bn(conv(h0, df_dim * 2, 4, 2, scope='h1_conv'), scope='h1_bn'))  # h1 is (64 x 64 x df_dim*2)
         h2 = lrelu(bn(conv(h1, df_dim * 4, 4, 2, scope='h2_conv'), scope='h2_bn'))  # h2 is (32x 32 x df_dim*4)
         h3 = lrelu(bn(conv(h2, df_dim * 8, 4, 1, scope='h3_conv'), scope='h3_bn'))  # h3 is (32 x 32 x df_dim*8)
@@ -30,7 +28,6 @@ def discriminator(img, scope, df_dim=64, reuse=False, train=True):
 
 
 def generator(img, scope, gf_dim=64, reuse=False, train=True):
-
     bn = functools.partial(slim.batch_norm, scale=True, is_training=train,
                            decay=0.9, epsilon=1e-5, updates_collections=None)
 

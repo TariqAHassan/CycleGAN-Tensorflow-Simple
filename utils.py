@@ -9,7 +9,6 @@ import tensorflow as tf
 
 
 class ItemPool(object):
-
     def __init__(self, max_num=50):
         self.max_num = max_num
         self.num = 0

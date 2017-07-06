@@ -6,8 +6,9 @@ import re
 import tensorflow as tf
 
 
-""" ops """
-
+# ------------------------------------------------------------------
+# Ops
+# ------------------------------------------------------------------
 
 def leak_relu(x, leak, scope=None):
     with tf.name_scope(scope, 'leak_relu', [x, leak]):
@@ -15,8 +16,9 @@ def leak_relu(x, leak, scope=None):
         return y
 
 
-""" loss """
-
+# ------------------------------------------------------------------
+# Loss
+# ------------------------------------------------------------------
 
 def l2_loss(a, b, weights=1.0, scope=None):
     with tf.name_scope(scope, 'l2_loss', [a, b, weights]):
@@ -30,7 +32,9 @@ def l1_loss(a, b, weights=1.0, scope=None):
         return loss
 
 
-""" summary """
+# ------------------------------------------------------------------
+# Summary
+# ------------------------------------------------------------------
 
 
 def summary(tensor, summary_type=['mean', 'stddev', 'max', 'min', 'sparsity', 'histogram']):
@@ -72,7 +76,9 @@ def summary_tensors(tensors, summary_type=['mean', 'stddev', 'max', 'min', 'spar
         return tf.summary.merge(summaries)
 
 
-""" others """
+# ------------------------------------------------------------------
+# Others
+# ------------------------------------------------------------------
 
 
 def counter(scope='counter'):

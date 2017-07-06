@@ -10,8 +10,10 @@ import image_utils as im
 
 from glob import glob
 
+# ------------------------------------------------------------------
+# Param
+# ------------------------------------------------------------------
 
-""" param """
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--dataset', dest='dataset', default='horse2zebra', help='which dataset to use')
 parser.add_argument('--crop_size', dest='crop_size', type=int, default=256, help='then crop to this size')
@@ -20,8 +22,10 @@ args = parser.parse_args()
 dataset = args.dataset
 crop_size = args.crop_size
 
+# ------------------------------------------------------------------
+# Run
+# ------------------------------------------------------------------
 
-""" run """
 with tf.Session() as sess:
     a_real = tf.placeholder(tf.float32, shape=[None, crop_size, crop_size, 3])
     b_real = tf.placeholder(tf.float32, shape=[None, crop_size, crop_size, 3])

@@ -40,7 +40,6 @@ def image_batch(image_paths, batch_size, load_size=286, crop_size=256, channels=
 
 
 class ImageData:
-
     def __init__(self, session, image_paths, batch_size, load_size=286, crop_size=256, channels=3, shuffle=True,
                  num_threads=4, min_after_dequeue=100, allow_smaller_final_batch=False):
         self.sess = session
