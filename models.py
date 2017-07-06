@@ -31,7 +31,7 @@ def discriminator(img, scope, df_dim=64, reuse=False, train=True):
 
     with tf.variable_scope(scope + '_discriminator', reuse=reuse):
         # h0: (128x128xdf_dim); h1: (64x64xdf_dim*2); h2: (32x32xdf_dim*4); h3: (32x32xdf_dim*8); pred: (32x32x1).
-        h0 = lrelu(conv(img, df_dim, 4, 2, scope='h0_conv'))
+        h0 = lrelu(conv(img, num_outputs=df_dim, kernel_size=4, stride=2, scope='h0_conv'))
         h1 = lrelu(bn(conv(h0, num_outputs=df_dim * 2, kernel_size=4, stride=2, scope='h1_conv'), scope='h1_bn'))
         h2 = lrelu(bn(conv(h1, num_outputs=df_dim * 4, kernel_size=4, stride=2, scope='h2_conv'), scope='h2_bn'))
         h3 = lrelu(bn(conv(h2, num_outputs=df_dim * 8, kernel_size=4, stride=1, scope='h3_conv'), scope='h3_bn'))
