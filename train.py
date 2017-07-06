@@ -33,21 +33,19 @@ input_shape = [None, crop_size, crop_size, n_channels]
 
 
 with tf.device('/gpu:%d' % gpu_id):
-    # Graph ---
-
-    # nodes
+    # Nodes ---
     a_real = tf.placeholder(tf.float32, shape=input_shape)
     b_real = tf.placeholder(tf.float32, shape=input_shape)
     a2b_sample = tf.placeholder(tf.float32, shape=input_shape)
     b2a_sample = tf.placeholder(tf.float32, shape=input_shape)
 
-    # Generator
+    # Generator ---
     a2b = models.generator(a_real, scope='a2b')
     b2a = models.generator(b_real, scope='b2a')
     b2a2b = models.generator(b2a, scope='a2b', reuse=True)
     a2b2a = models.generator(a2b, scope='b2a', reuse=True)
 
-    # Discriminator
+    # Discriminator ---
     a_dis = models.discriminator(a_real, scope='a')
     b2a_dis = models.discriminator(b2a, scope='a', reuse=True)
     b2a_sample_dis = models.discriminator(b2a_sample, scope='a', reuse=True)
