@@ -37,7 +37,7 @@ def l1_loss(a, b, weights=1.0, scope=None):
 # ------------------------------------------------------------------
 
 
-def summary(tensor, summary_type=['mean', 'stddev', 'max', 'min', 'sparsity', 'histogram']):
+def summary(tensor, summary_type=('mean', 'stddev', 'max', 'min', 'sparsity', 'histogram')):
     """ Attach a lot of summaries to a Tensor. """
 
     # Remove 'tower_[0-9]/' from the name in case this is a multi-GPU training
@@ -68,7 +68,7 @@ def summary(tensor, summary_type=['mean', 'stddev', 'max', 'min', 'sparsity', 'h
         return tf.summary.merge(summaries)
 
 
-def summary_tensors(tensors, summary_type=['mean', 'stddev', 'max', 'min', 'sparsity', 'histogram']):
+def summary_tensors(tensors, summary_type=('mean', 'stddev', 'max', 'min', 'sparsity', 'histogram')):
     with tf.name_scope('summary_tensors'):
         summaries = []
         for tensor in tensors:

@@ -143,7 +143,8 @@ def center_crop(x, crop_h, crop_w=None):
     return x[j:j + crop_h, i:i + crop_w]
 
 
-def transform(image, resize_h=None, resize_w=None, interp='bilinear', crop_h=None, crop_w=None, crop_fn=center_crop):
+def transform(image, resize_h=None, resize_w=None, interp='bilinear',
+              crop_h=None, crop_w=None, crop_fn=center_crop):
     """
     transform a [-1.0, 1.0] image with crop and resize
 
@@ -155,13 +156,13 @@ def transform(image, resize_h=None, resize_w=None, interp='bilinear', crop_h=Non
     if resize_h is not None:
         if resize_w is None:
             resize_w = resize_h
-        imresize(image, [resize_h, resize_w], interp='bilinear')
+        imresize(image, [resize_h, resize_w], interp=interp)
 
     return image
 
 
-def imread_transform(path, mode='RGB', resize_h=None, resize_w=None, interp='bilinear',
-                     crop_h=None, crop_w=None, crop_fn=center_crop):
+def imread_transform(path, mode='RGB', resize_h=None, resize_w=None,
+                     interp='bilinear', crop_h=None, crop_w=None, crop_fn=center_crop):
     """
     read and transform an image into [-1.0, 1.0] of float64
 
@@ -183,7 +184,8 @@ def imread_transform(path, mode='RGB', resize_h=None, resize_w=None, interp='bil
 
 def read_transform_images(path_list, mode='RGB', resize_h=None, resize_w=None, interp='bilinear',
                           crop_h=None, crop_w=None, crop_fn=center_crop):
-    """ read and transform a list images into [-1.0, 1.0] of float64 and return the numpy array batch in shape of N * H * W (* C) """
+    """Read and transform a list images into [-1.0, 1.0]
+     of float64 and return the numpy array batch in shape of N * H * W (* C)."""
     images = [imread_transform(path, mode, resize_h, resize_w, interp, crop_h, crop_w, crop_fn) for path in path_list]
     return np.array(images)
 
