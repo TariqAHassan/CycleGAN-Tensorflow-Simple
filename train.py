@@ -41,11 +41,13 @@ with tf.device('/gpu:%d' % gpu_id):
     a2b_sample = tf.placeholder(tf.float32, shape=input_shape)
     b2a_sample = tf.placeholder(tf.float32, shape=input_shape)
 
+    # Generator
     a2b = models.generator(a_real, scope='a2b')
     b2a = models.generator(b_real, scope='b2a')
     b2a2b = models.generator(b2a, scope='a2b', reuse=True)
     a2b2a = models.generator(a2b, scope='b2a', reuse=True)
 
+    # Discriminator
     a_dis = models.discriminator(a_real, scope='a')
     b2a_dis = models.discriminator(b2a, scope='a', reuse=True)
     b2a_sample_dis = models.discriminator(b2a_sample, scope='a', reuse=True)
@@ -53,7 +55,7 @@ with tf.device('/gpu:%d' % gpu_id):
     a2b_dis = models.discriminator(a2b, scope='b', reuse=True)
     a2b_sample_dis = models.discriminator(a2b_sample, scope='b', reuse=True)
 
-    # losses
+    # Losses ---
     g_loss_a2b = tf.identity(ops.l2_loss(a2b_dis, tf.ones_like(a2b_dis)), name='g_loss_a2b')
     g_loss_b2a = tf.identity(ops.l2_loss(b2a_dis, tf.ones_like(b2a_dis)), name='g_loss_b2a')
     cyc_loss_a = tf.identity(ops.l1_loss(a_real, a2b2a) * 10.0, name='cyc_loss_a')
@@ -67,12 +69,12 @@ with tf.device('/gpu:%d' % gpu_id):
     d_loss_a2b_sample = ops.l2_loss(a2b_sample_dis, tf.zeros_like(a2b_sample_dis))
     d_loss_b = tf.identity((d_loss_b_real + d_loss_a2b_sample) / 2.0, name='d_loss_b')
 
-    # summaries
+    # Summaries ---
     g_summary = ops.summary_tensors([g_loss_a2b, g_loss_b2a, cyc_loss_a, cyc_loss_b])
     d_summary_a = ops.summary(d_loss_a)
     d_summary_b = ops.summary(d_loss_b)
 
-    # optim ---
+    # Optimization  ---
     t_var = tf.trainable_variables()
     d_a_var = [var for var in t_var if 'a_discriminator' in var.name]
     d_b_var = [var for var in t_var if 'b_discriminator' in var.name]
