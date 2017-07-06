@@ -12,6 +12,8 @@ from glob import glob
 import tensorflow as tf
 import image_utils as im
 
+Adam = tf.train.AdamOptimizer
+
 # ------------------------------------------------------------------
 # Param
 # ------------------------------------------------------------------
@@ -23,7 +25,8 @@ n_channels = 3
 epoch = 200
 batch_size = 1
 lr = 0.0002
-gpu_id = 0
+device = 'cpu'
+device_id = 0
 
 input_shape = [None, crop_size, crop_size, n_channels]
 
@@ -32,7 +35,7 @@ input_shape = [None, crop_size, crop_size, n_channels]
 # ------------------------------------------------------------------
 
 
-with tf.device('/gpu:%d' % gpu_id):
+with tf.device('/{0}:{1}'.format(device, device_id)):
     # Nodes ---
     a_real = tf.placeholder(tf.float32, shape=input_shape)
     b_real = tf.placeholder(tf.float32, shape=input_shape)
@@ -78,9 +81,9 @@ with tf.device('/gpu:%d' % gpu_id):
     d_b_var = [var for var in t_var if 'b_discriminator' in var.name]
     g_var = [var for var in t_var if 'a2b_generator' in var.name or 'b2a_generator' in var.name]
 
-    d_a_train_op = tf.train.AdamOptimizer(lr, beta1=0.5).minimize(d_loss_a, var_list=d_a_var)
-    d_b_train_op = tf.train.AdamOptimizer(lr, beta1=0.5).minimize(d_loss_b, var_list=d_b_var)
-    g_train_op = tf.train.AdamOptimizer(lr, beta1=0.5).minimize(g_loss, var_list=g_var)
+    d_a_train_op = Adam(lr, beta1=0.5).minimize(d_loss_a, var_list=d_a_var)
+    d_b_train_op = Adam(lr, beta1=0.5).minimize(d_loss_b, var_list=d_b_var)
+    g_train_op = Adam(lr, beta1=0.5).minimize(g_loss, var_list=g_var)
 
 # ------------------------------------------------------------------
 # Train - Init
