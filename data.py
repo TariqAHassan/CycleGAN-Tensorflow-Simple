@@ -37,7 +37,7 @@ def image_batch(image_paths, batch_size, load_size=286,
     return img_batch, len(image_paths)
 
 
-class ImageData:
+class ImageData(object):
     def __init__(self, session, image_paths, batch_size, **kwargs):
         self.sess = session
         self.img_batch, self.img_num = image_batch(image_paths, batch_size, **kwargs)
